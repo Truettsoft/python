@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src='https://use.fontawesome.com/releases/v5.0.8/js/all.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .c-menu__item__inner span {
+            display: none;
+        }
+
+        .c-menu__item__inner.active span {
+            display: inline;
+        }
+
+        .hide-text span {
+            display: none;
+        }
+
+        .show-text span {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+    <header class="l-header">
+        <div class="l-header__inner clearfix">
+            <div class="c-header-icon js-hamburger">
+                <div class="hamburger-toggle"><span class="bar-top"></span><span class="bar-mid"></span><span class="bar-bot"></span></div>
+            </div>
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="label label-pill label-danger count" style="border-radius:10px;"></span>
+                    <span class="glyphicon glyphicon-bell" style="font-size:18px;"></span>
+                </a>
+                <ul class="dropdown-menu" id="notifications"></ul>
+            </div>
+            <div class="c-search">
+                <input class="c-search__input u-input" placeholder="Search..." type="text"/>
+            </div>
+            <div class="header-icons-group">
+                <div class="c-header-icon logout"><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i></a></div>
+            </div>
+        </div>
+    </header>
+    <div class="l-sidebar">
+        <div class="logo">
+            <div class="logo__txt"></div>
+        </div>
+        <div class="l-sidebar__content">
+            <nav class="c-menu js-menu">
+                <ul class="u-list">
+                    <li class="c-menu__item has-submenu" data-toggle="tooltip" title="Employees Info">
+                        <a href="{{ url_for('employee_info') }}" class="c-menu__item__inner hide-text">
+                            <i class="fas fa-user-plus"></i><span style="color:white">Employees Info</span>
+                        </a>
+                    </li>
+                    
+                    <li class="c-menu__item has-submenu" data-toggle="tooltip" title="Menus Management">
+                        <a href="{{ url_for('menu_management') }}" class="c-menu__item__inner hide-text">
+                            <i class="fas fa-utensils"></i><span style="color:white">Menus Management</span>
+                        </a>
+                    </li>
+
+                    <li class="c-menu__item has-submenu" data-toggle="tooltip" title="Menu Category">
+                        <a href="{{ url_for('menu_category') }}" class="c-menu__item__inner hide-text">
+                            <i class="fas fa-th-list"></i><span style="color:white">Menu Category</span>
+                        </a>
+                    </li>
+                    
+                    <li class="c-menu__item has-submenu" data-toggle="tooltip" title="Order Management">
+                        <a href="{{ url_for('orders') }}" class="c-menu__item__inner hide-text">
+                            <i class="fas fa-shopping-cart"></i><span style="color:white">Order Management</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <main class="l-main">
+        <div class="content-wrapper content-wrapper--with-bg">
+            <div class="center-content">
+                <h1 class="page-title">Welcome to Flavor Haven</h1>
+                
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        let Dashboard = (() => {
+            let global = {
+                tooltipOptions: {
+                    placement: "right"
+                },
+                menuClass: ".c-menu"
+            };
+
+            let menuChangeActive = el => {
+                let hasSubmenu = $(el).hasClass("has-submenu");
+                $(global.menuClass + " .is-active").removeClass("is-active");
+                $(el).addClass("is-active");
+            };
+
+            let sidebarChangeWidth = () => {
+                let $menuItemsTitle = $("li .menu-item__title");
+                $("body").toggleClass("sidebar-is-reduced sidebar-is-expanded");
+                $(".hamburger-toggle").toggleClass("is-opened");
+                $(".c-menu__item__inner").toggleClass("show-text hide-text");
+                if ($("body").hasClass("sidebar-is-expanded")) {
+                    $('[data-toggle="tooltip"]').tooltip("destroy");
+                } else {
+                    $('[data-toggle="tooltip"]').tooltip(global.tooltipOptions);
+                }
+            };
+
+            return {
+                init: () => {
+                    $(".js-hamburger").on("click", sidebarChangeWidth);
+                    $(".js-menu li").on("click", e => {
+                        menuChangeActive(e.currentTarget);
+                    });
+                    $('[data-toggle="tooltip"]').tooltip(global.tooltipOptions);
+                }
+            };
+        })();
+        Dashboard.init();
+
+        function fetchNotificationCount() {
+            $.ajax({
+                url: "{{ url_for('get_notification_count') }}",
+                type: 'GET',
+                success: function(data) {
+                    $('.count').text(data.count);
+                    console.log("Notification count fetched:", data.count);
+                },
+                error: function() {
+                    console.log("Failed to fetch notification count.");
+                }
+            });
+        }
+    
+        function fetchNotifications() {
+            console.log("Fetching notifications...");
+            $.ajax({
+                url: "{{ url_for('get_notifications') }}",
+                type: 'GET',
+                success: function(data) {
+                    console.log("Notifications fetched:", data);
+                    let notifications = data.notifications;
+                    let notificationsList = $('#notifications');
+                    notificationsList.empty();
+                    notifications.forEach(notification => {
+                        notificationsList.append(
+                            `<li>
+                               <strong>Order ID: ${notification.id}</strong> - ${notification.firstname} ${notification.email}
+                            </li>`
+                        );
+                    });
+    
+                    // After fetching notifications, update the count
+                    fetchNotificationCount();
+                },
+                error: function() {
+                    console.log("Failed to fetch notifications.");
+                }
+            });
+        }
+    
+        $(document).ready(function() {
+            fetchNotificationCount();
+            setInterval(fetchNotificationCount, 60000); // Fetch count every 60 seconds
+    
+            $('.dropdown-toggle').on('click', function() {
+                fetchNotifications();
+            });
+        });
+    </script>
+</body>
+</html>

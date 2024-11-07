@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Order Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.paypal.com/sdk/js?client-id=AaWkh0qTgjWJuE1gr3P-jF89oVa5fziQ1h2U1BbXEYvbA1-SzsluclwAiJkyk6hWciuQE-LpjUKywwy0"></script>
+    <link rel="stylesheet" href="path/to/font-awesome/css/all.min.css" />
+    <style>
+        body {
+            overflow-y:hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+        .menu-item {
+            margin-bottom: 20px;
+        }
+        .menu-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .menu-item .card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 10px;
+        }
+        .menu-item .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .btn-primary {
+            color: #fff;
+            background-color: coral;
+            border-color: coral;
+            width: 100%;
+            border-radius: 20px;
+            margin-top: 10px;
+            margin-left: 0px;
+            align-items: center;
+        }
+        button, input, select, textarea {
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            margin-left: 10px;
+        }
+        .choose-btn-container {
+            width: 300px;
+            margin-top: 10px;
+        }
+        #order-summary {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #order-summary table {
+            width: 100%;
+        }
+        #order-summary .total {
+            text-align: right;
+            font-weight: bold;
+        }
+        .btn-success {
+            color: #fff;
+            background-color: coral;
+            border-color: coral;
+        }
+        .quantity-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .quantity-controls button {
+            background-color: coral;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .cart-count {
+            position: relative;
+        }
+        .cart-count::after {
+            content: attr(data-count);
+            position: absolute;
+            top: 14px;
+            right: 9px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+        .modal-title {
+            margin: 0;
+            line-height: 1.42857143;
+            text-align: center;
+            font-size: xx-large;
+        }
+        .modal-body-popub{
+            margin-left: 148px;
+            font-size: x-large;
+            margin-top: 71px;
+            color: coral;
+        }
+        .btn-popub{
+            display: inline-block;
+            padding: 6px 12px;
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-image: none;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: white;
+            background-color: coral;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="l-header">
+        <div class="l-header__inner clearfix">
+            <div class="c-header-icon js-hamburger">
+                <div class="hamburger-toggle"><span class="bar-top"></span><span class="bar-mid"></span><span class="bar-bot"></span></div>
+            </div>
+            <div class="search">
+                <form id="order-form" method="GET" action="{{ url_for('order_management') }}">
+                    <input type="text" id="searchInput" name="q" placeholder="Search" value="{{ search_term }}">
+                    <button type="submit">Search</button>
+                </form>
+        </div>
+           
+            <div class="header-icons-group">
+                <div class="c-header-icon cart">
+                    <div class="c-header-icon cart cart-count" data-count="0"><a href="#" id="cart-icon"><i class="fas fa-shopping-cart"></i></a></div>
+                </div>
+                <div class="c-header-icon logout"><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i></a></div>
+            </div>
+        </div>
+    </header>
+    <div class="l-sidebar">
+        <div class="logo">
+            <div class="logo__txt"></div>
+        </div>
+        <div class="l-sidebar__content">
+            <nav class="c-menu js-menu">
+               
+            </nav>
+        </div>
+    </div>
+    <main class="l-main">
+        <div class="content-wrapper content-wrapper--with-bg">
+            <h1 class="mt-5">Order Menu</h1>
+            <form id="order-form" method="POST" action="{{ url_for('order_management') }}">
+                <div class="row" id="menu-container">
+                    {% for item in menu_data %}
+                    <div class="col-md-3 menu-item" data-category="{{ item[1] }}">
+                        <div class="card">
+                            <img src="{{ url_for('static', filename='images/' + item[5]) }}" alt="{{ item[2] }}">
+                            <div class="card-body">
+                                <div>
+                                    <h4 class="card-title">{{ item[2] }}</h4>
+                                    <p class="card-text"><strong>Category:</strong> {{ item[1] }}</p>
+                                    <p class="card-text"><strong>Price:</strong> ${{ item[4] }}</p>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary add-btn" data-item="{{ item[0] }}">Add</button>
+                                    <div class="quantity-controls" style="display: none;">
+                                        <button type="button" class="btn-minus" data-item="{{ item[0] }}">-</button>
+                                        <span class="quantity" data-item="{{ item[0] }}">1</span>
+                                        <button type="button" class="btn-plus" data-item="{{ item[0] }}">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="order_details" id="order-details">
+            </form>
+        </div>
+    </main>
+
+   <!-- Checkout Modal -->
+   <div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="checkout-form" method="POST" action="{{ url_for('checkout') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkoutModalLabel">Checkout</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="billing-details">
+                        <div class="order-summary">
+                            <h3>Your Order</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center">Product</th>
+                                        <th style="text-align:center">Price</th>
+                                        <th style="text-align:center">Quantity</th>
+                                        <th style="text-align:center">Subtotal</th>
+                                        <th style="text-align:center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="order-summary-body">
+                                    <tr>
+                                        <td style="text-align:center">Product Name 1</td>
+                                        <td style="text-align:center">$10.00</td>
+                                        <td style="text-align:center">2</td>
+                                        <td style="text-align:center">$20.00</td>
+                                        <td style="text-align:center">
+                                            <button class="btn btn-edit" data-item="1">Edit</button>
+                                            <button class="btn btn-delete" data-item="1">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-right">Total</td>
+                                        <td class="total" id="grand-total">$20.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            <label for="firstname">First Name</label>
+                            <input type="text" class="form-control" id="firstname" name="firstname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname">Last Name</label>
+                            <input type="text" class="form-control" id="lastname" name="lastname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="text" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                        </div>
+                        <input type="hidden" name="order_details" id="modal-order-details">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="paypal-button-container"></div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Place Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Success Message Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            
+            <div class="modal-body-popub">
+                Order placed successfully!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-popub" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AaWkh0qTgjWJuE1gr3P-jF89oVa5fziQ1h2U1BbXEYvbA1-SzsluclwAiJkyk6hWciuQE-LpjUKywwy0"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let orderDetails = [];
+    
+        function updateAmount() {
+            let totalCost = orderDetails.reduce((total, item) => total + (item.price * item.quantity), 0);
+            document.getElementById('grand-total').textContent = `$${totalCost.toFixed(2)}`;
+            return totalCost;
+        }
+    
+        paypal.Buttons({
+            style: {
+                height: 40
+            },
+            createOrder: function(data, actions) {
+                const amount = updateAmount();
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: amount.toFixed(2)
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    const firstname = document.getElementById('firstname').value;
+                    const lastname = document.getElementById('lastname').value;
+                    const phone = document.getElementById('phone').value;
+                    const email = document.getElementById('email').value;
+                    const address = document.getElementById('address').value;
+        
+                    const totalCost = updateAmount().toFixed(2);
+        
+                    fetch('/checkout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            firstname: firstname,
+                            lastname: lastname,
+                            phone: phone,
+                            email: email,
+                            address: address,
+                            order_details: JSON.stringify(orderDetails),
+                            amount: totalCost,
+                            transaction_id: details.id,
+                            payer_id: details.payer.payer_id,
+                            payment_status: details.status
+                        })
+                    }).then(response => response.text()).then(data => {
+                        console.log(data);
+                        $('#successModal').modal('show');
+                    }).catch(error => {
+                        console.error('Error:', error);
+                    });
+                });
+            }
+        }).render('#paypal-button-container');
+
+        // Assuming you have elements with IDs 'firstname', 'lastname', 'phone', 'email', 'address', and 'grand-total'
+        $('#cart-icon').on('click', function() {
+            updateOrderSummary();
+            $('#checkoutModal').modal('show');
+        });
+
+        // Function to update order summary and total cost
+        function updateOrderSummary() {
+            let orderSummaryBody = '';
+            orderDetails.forEach(item => {
+                const subtotal = item.price * item.quantity;
+                orderSummaryBody += `
+                    <tr data-item="${item.id}">
+                        <td style="text-align:center">${item.name}</td>
+                        <td style="text-align:center">$${item.price}</td>
+                        <td style="text-align:center">
+                            <div class="quantity-controls">
+                                <button type="button" class="btn-minus" data-item="${item.id}">-</button>
+                                <span class="quantity" data-item="${item.id}">${item.quantity}</span>
+                                <button type="button" class="btn-plus" data-item="${item.id}">+</button>
+                            </div>
+                        </td>
+                        <td style="text-align:center">$${subtotal.toFixed(2)}</td>
+                        <td style="text-align:center">
+                            <button type="button" class="btn btn-edit" data-item="${item.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-delete" data-item="${item.id}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            $('#order-summary-body').html(orderSummaryBody);
+            updateAmount();
+
+            $('.btn-edit').on('click', handleEdit);
+            $('.btn-delete').on('click', handleDelete);
+            $('.btn-minus').on('click', handleMinus);
+            $('.btn-plus').on('click', handlePlus);
+        }
+
+        function handleEdit() {
+            const itemId = $(this).data('item');
+            const item = orderDetails.find(i => i.id === itemId);
+            const quantityControls = $(this).closest('tr').find('.quantity-controls');
+            quantityControls.toggle();
+        }
+
+        function handleDelete() {
+            const itemId = $(this).data('item');
+            orderDetails = orderDetails.filter(i => i.id !== itemId);
+            updateOrderSummary();
+        }
+
+        function handleMinus() {
+            const itemId = $(this).data('item');
+            const item = orderDetails.find(i => i.id === itemId);
+            if (item.quantity > 1) {
+                item.quantity--;
+            } else {
+                orderDetails = orderDetails.filter(i => i.id !== itemId);
+                $(this).closest('tr').remove();
+            }
+            updateOrderSummary();
+        }
+
+        function handlePlus() {
+            const itemId = $(this).data('item');
+            const item = orderDetails.find(i => i.id === itemId);
+            item.quantity++;
+            updateOrderSummary();
+        }
+
+        function getItemDetails(itemId) {
+            const items = {{ menu_data|tojson }};
+            return items.find(i => i[0] == itemId);
+        }
+
+        $('.add-btn').on('click', function() {
+            const itemId = $(this).data('item');
+            const itemDetails = getItemDetails(itemId);
+
+            let item = orderDetails.find(i => i.id === itemId);
+            if (item) {
+                item.quantity++;
+            } else {
+                orderDetails.push({
+                    id: itemDetails[0],
+                    name: itemDetails[2],
+                    price: itemDetails[4],
+                    quantity: 1
+                });
+            }
+            $(this).siblings('.quantity-controls').show();
+            $(this).hide();
+            updateCartCount();
+        });
+
+        $('.btn-minus').on('click', function() {
+            const itemId = $(this).data('item');
+            const item = orderDetails.find(i => i.id === itemId);
+            if (item.quantity > 1) {
+                item.quantity--;
+                $(this).siblings('.quantity').text(item.quantity);
+            } else {
+                orderDetails = orderDetails.filter(i => i.id !== itemId);
+                $(this).parent('.quantity-controls').hide();
+                $(this).parent().siblings('.add-btn').show();
+            }
+            updateCartCount();
+        });
+
+        $('.btn-plus').on('click', function() {
+            const itemId = $(this).data('item');
+            const item = orderDetails.find(i => i.id === itemId);
+            item.quantity++;
+            $(this).siblings('.quantity').text(item.quantity);
+            updateCartCount();
+        });
+
+        $('#search-form').on('submit', function(event) {
+            event.preventDefault();
+            const searchInput = $('#searchInput').val();
+            $.ajax({
+                type: 'GET',
+                url: '/order_management',
+                data: { q: searchInput },
+                success: function(response) {
+                    $('#menu-container').html(response);
+                },
+                error: function(error) {
+                    console.error('Error searching:', error);
+                }
+            });
+        });
+
+        function updateCartCount() {
+            const cartCount = orderDetails.reduce((total, item) => total + item.quantity, 0);
+            $('.cart-count').attr('data-count', cartCount);
+        }
+
+        updateCartCount();
+    });
+</script>
+
+    <script>
+        $(document).ready(function() {
+            $('#search-form').on('submit', function(event) {
+                event.preventDefault(); 
+    
+                const searchInput = $('#searchInput').val();
+                $.ajax({
+                    type: 'GET',
+                    url: '/order_management',
+                    data: { q: searchInput },
+                    success: function(response) {
+                        $('#menu-container').html(response); 
+                    },
+                    error: function(error) {
+                        console.error('Error searching:', error);
+                    }
+                });
+            });
+        });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+</html>

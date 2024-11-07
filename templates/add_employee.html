@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Add Employee</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+        
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src='https://use.fontawesome.com/releases/v5.0.8/js/all.js'></script>
+    <style>
+        /* Custom styles */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            margin-top:170px
+        }
+
+        label {
+            font-weight: bold;
+        }
+        input[type="text"], input[type="name"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: coral;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: orange;
+        }
+        form {
+            max-width: 400px;
+            margin: auto; 
+            margin-top: 66px; 
+            margin-bottom: 50px; 
+        }  
+        
+    </style>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          document.querySelector('form').addEventListener('submit', function (event) {
+              let name = document.getElementById('name').value.trim();
+              let email = document.getElementById('email').value.trim();
+              let phone = document.getElementById('phone').value.trim();
+              let username = document.getElementById('username').value.trim();
+              let password = document.getElementById('password').value.trim();
+
+              // Validate name
+              if (name === '') {
+                  alert('Please enter a name.');
+                  event.preventDefault();
+                  return;
+              }
+
+              // Validate email
+              if (!isValidEmail(email)) {
+                  alert('Please enter a valid email address.');
+                  event.preventDefault();
+                  return;
+              }
+
+              // Validate phone number
+              if (!isValidPhone(phone)) {
+                  alert('Please enter a valid phone number.');
+                  event.preventDefault();
+                  return;
+              }
+
+              // Validate username and password (optional)
+
+              // All validation passed, form can be submitted
+          });
+      });
+
+      function isValidEmail(email) {
+          // Email validation regex
+          return /^[\w\.-]+@[\w\.-]+\.\w+$/.test(email);
+      }
+
+      function isValidPhone(phone) {
+          // Phone validation regex (10 digits)
+          return /^\d{10}$/.test(phone);
+      }
+  </script>
+  
+    </head>
+  <body class="sidebar-is-reduced">
+    <header class="l-header">
+      <div class="l-header__inner clearfix">
+        <div class="c-header-icon js-hamburger">
+          <div class="hamburger-toggle"><span class="bar-top"></span><span class="bar-mid"></span><span class="bar-bot"></span></div>
+        </div>
+        <div class="dropdown">
+       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="label label-pill label-danger count" style="border-radius:10px;"></span> <span class="glyphicon glyphicon-bell" style="font-size:18px;"></span></a>
+       <ul class="dropdown-menu"></ul>
+</div>
+<div class="header-icons-group">
+          <!-- <div class="c-header-icon basket"><span class="c-badge c-badge--blue c-badge--header-icon animated swing">4</span><i class="fa fa-shopping-basket"></i></div> -->
+          <div class="c-header-icon logout"><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i></a></div>
+
+        </div>
+      </div>
+    </header>
+    <div class="l-sidebar">
+      <div class="logo">
+        <div class="logo__txt"></div>
+      </div>
+      <div class="l-sidebar__content">
+        <nav class="c-menu js-menu">
+          <ul class="u-list">
+            
+            <li class="c-menu__item has-submenu" data-toggle="tooltip" title="Employees Info">
+                <a href="{{ url_for('employee_info') }}" class="c-menu__item__inner hide-text">
+                    <i class="fas fa-user-plus"></i><span style="color:white">Employees Info</span>
+                </a>
+            </li>
+            <li class="c-menu__item has-submenu" data-toggle="tooltip" title="Menus Management">
+                <div class="c-menu__item__inner hide-text"><i class="fas fa-utensils"></i><span style="color:white">Menus Management</span></div>
+            </li>
+            <li class="c-menu__item has-submenu" data-toggle="tooltip" title="Menu Category">
+                <div class="c-menu__item__inner hide-text"><i class="fas fa-th-list"></i><span style="color:white">Menu Category</span></div>
+            </li>
+            <li class="c-menu__item has-submenu" data-toggle="tooltip" title="Order Management">
+                <div class="c-menu__item__inner hide-text"><i class="fas fa-shopping-cart"></i><span style="color:white">Order Management</span></div>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+    <main class="l-main">
+        <div class="content-wrapper content-wrapper--with-bg">
+    <div class="emp">
+        <h2>Employee/Add Employee</h2> 
+        <form action="" method="post" >
+            <div class="mb-3">
+                <label for="name">Name</label><br>
+                <input type="name" id="name" name="name"><br>
+                <label for="email">Email</label><br>
+                <input type="email" id="email" name="email"><br>
+                <label for="phone">Phone</label><br>
+                <input type="text" id="phone" name="phone"><br>
+                <label for="message">Username</label><br>
+                <input type="text" id="username" name="username"><br>
+                <label for="message">Password</label><br>
+                <input type="text" id="password" name="password"><br>
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+</div>
+</main>
+  </body>
+  <script>
+      let Dashboard = (() => {
+  let global = {
+    tooltipOptions: {
+      placement: "right" },
+
+    menuClass: ".c-menu" };
+
+
+  let menuChangeActive = el => {
+    let hasSubmenu = $(el).hasClass("has-submenu");
+    $(global.menuClass + " .is-active").removeClass("is-active");
+    $(el).addClass("is-active");
+
+  };
+
+  let sidebarChangeWidth = () => {
+    let $menuItemsTitle = $("li .menu-item__title");
+
+    $("body").toggleClass("sidebar-is-reduced sidebar-is-expanded");
+    $(".hamburger-toggle").toggleClass("is-opened");
+
+    if ($("body").hasClass("sidebar-is-expanded")) {
+      $('[data-toggle="tooltip"]').tooltip("destroy");
+    } else {
+      $('[data-toggle="tooltip"]').tooltip(global.tooltipOptions);
+    }
+
+  };
+
+  return {
+    init: () => {
+      $(".js-hamburger").on("click", sidebarChangeWidth);
+
+      $(".js-menu li").on("click", e => {
+        menuChangeActive(e.currentTarget);
+      });
+
+      $('[data-toggle="tooltip"]').tooltip(global.tooltipOptions);
+    } };
+
+})();
+
+Dashboard.init();
+  </script>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    font-family: Arial, sans-serif; /* Default font for body */
+  }
+  .bg-image {
+    background-image: url('https://t3.ftcdn.net/jpg/04/46/37/36/360_F_446373646_uYHx1cGEL6zrndv4xlcElHtHdfa0BF0j.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .login-panel {
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 30px;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    font-family: 'Comic Sans MS', cursive; /* Font for login panel */
+  }
+  .button {
+    background-color: #FFA500; /* Orange */
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease; /* Smooth transition on hover */
+    font-family: Arial, sans-serif; /* Font for buttons */
+  }
+  .button:hover {
+    background-color: #FF8C00; /* Darker shade of orange on hover */
+  }
+  /* Added style rule for the text */
+  .login-panel p {
+    font-family: Arial, sans-serif; /* Use the same font as buttons */
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-image">
+  <div class="login-panel">
+    <h2>Welcome to Flavor Haven</h2> <!-- Font will be Comic Sans MS -->
+    <p>Please select your login type</p>
+    <form action="/login" method="post"> <!-- Modified: method="post" added -->
+      <button type="submit" class="button" name="loginType" value="admin">Admin Login</button>
+      <button type="submit" class="button" name="loginType" value="employee">Employee Login</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
